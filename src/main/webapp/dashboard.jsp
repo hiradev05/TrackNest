@@ -1,9 +1,3 @@
-<%
-    if (session.getAttribute("customerID") == null) {
-        response.sendRedirect(request.getContextPath() + "/login.jsp");
-        return;
-    }
-%>
 
 <%@ page import="java.util.List" %>
 <%@ page import="com.tracknest.model.Order" %>
@@ -14,11 +8,8 @@
         return;
     }
 
-    List<Order> orders =
-        (List<Order>) request.getAttribute("orders");
-
-    String customerName =
-        (String) session.getAttribute("customerName");
+    List<Order> orders = (List<Order>) request.getAttribute("orders");
+    String customerName = (String) session.getAttribute("customerName");
 %>
 
 <!DOCTYPE html>
@@ -27,63 +18,107 @@
     <title>TrackNest | Dashboard</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <link rel="stylesheet"
           href="<%= request.getContextPath() %>/css/style.css">
 </head>
 
 <body>
 
-<header>
-    <h1>TrackNest</h1>
-    <nav>
-        <a href="<%= request.getContextPath() %>/dashboard">Dashboard</a>
-        <a href="<%= request.getContextPath() %>/logout">Logout</a>
-    </nav>
+<header class="navbar">
+    <div class="container">
+        <a class="logo" href="<%= request.getContextPath() %>/dashboard">
+            TrackNest
+        </a>
+
+        <nav class="nav-links">
+            <a href="<%= request.getContextPath() %>/dashboard">Dashboard</a>
+            <a href="<%= request.getContextPath() %>/logout">Logout</a>
+        </nav>
+    </div>
 </header>
 
-<main>
-    <h2>Welcome, <%= customerName %>!</h2>
-    <p>Your centralized order tracking dashboard.</p>
+<main class="container page-section">
 
-    <h3>My Orders</h3>
+    <div class="dashboard-header">
+        <div>
+            <h2 class="page-title">
+                Welcome, <%= customerName %>!
+            </h2>
+            <p class="page-subtitle">
+                Manage and track all your orders in one place.
+            </p>
+        </div>
+    </div>
 
-    <% if (orders == null || orders.isEmpty()) { %>
+    <section class="dashboard-card">
 
-        <p>You have no orders yet.</p>
+        <h3>My Orders</h3>
+        <p class="page-subtitle">Your centralized order overview.</p>
 
-    <% } else { %>
+        <% if (orders == null || orders.isEmpty()) { %>
 
-        <table border="1" cellpadding="10">
-            <thead>
-                <tr>
-                    <th>Order ID</th>
-                    <th>Store</th>
-                    <th>Order Number</th>
-                    <th>Order Date</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
+            <p>You have no orders yet.</p>
 
-            <tbody>
-                <% for (Order order : orders) { %>
-                    <tr>
-                        <td><%= order.getOrderID() %></td>
-                        <td><%= order.getStoreName() %></td>
-                        <td>
-                            <a href="<%= request.getContextPath() %>/track?orderId=<%= order.getOrderID() %>">
-                                <%= order.getOrderNumber() %>
-                            </a>
-                        </td>
-                        <td><%= order.getOrderDate() %></td>
-                        <td><%= order.getOrderStatus() %></td>
-                    </tr>
-                <% } %>
-            </tbody>
-        </table>
+        <% } else { %>
 
-    <% } %>
+            <div class="form-group">
+                <input
+                    type="text"
+                    id="orderSearch"
+                    placeholder="Search by order number, store or status..."
+                    aria-label="Search orders">
+            </div>
+
+            <div class="table-container">
+                <table id="ordersTable">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Store</th>
+                            <th>Order Number</th>
+                            <th>Order Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <% for (Order order : orders) { %>
+                            <tr>
+                                <td><%= order.getOrderID() %></td>
+                                <td><%= order.getStoreName() %></td>
+                                <td>
+                                    <a href="<%= request.getContextPath() %>/track?orderId=<%= order.getOrderID() %>">
+                                        <%= order.getOrderNumber() %>
+                                    </a>
+                                </td>
+                                <td><%= order.getOrderDate() %></td>
+                                <td>
+                                    <span class="status">
+                                        <%= order.getOrderStatus() %>
+                                    </span>
+                                </td>
+                            </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+
+            <p id="noSearchResults" style="display:none; margin-top:15px;">
+                No matching orders found.
+            </p>
+
+        <% } %>
+
+    </section>
 
 </main>
+
+<footer class="footer">
+    <p>TrackNest &copy; 2026 | Centralized Multi-Platform Order Tracking</p>
+</footer>
+
+<script src="<%= request.getContextPath() %>/js/script.js"></script>
 
 </body>
 </html>
